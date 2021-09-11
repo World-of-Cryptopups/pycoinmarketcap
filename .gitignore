@@ -1,0 +1,10 @@
+# virtual environment
+venv
+
+# py caches
+__pycache__
+.mypy_cache
+
+# env
+.env
+.env.local
