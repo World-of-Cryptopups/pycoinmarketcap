@@ -1,12 +1,13 @@
+from __future__ import annotations
+
 from typing import Dict, List
 from requests import Session, models
 from .response import Response
 from .errors import *
 
-from __future__ import annotations
 
-API_DOMAIN = "https://pro-api.coinmarketcap.com/v1/"
-SANDBOX_API = "https://sandbox-api.coinmarketcap.com/v1/"
+API_DOMAIN = "https://pro-api.coinmarketcap.com/v1"
+SANDBOX_API = "https://sandbox-api.coinmarketcap.com/v1"
 SANDBOX_API_KEY = "b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c"
 
 
