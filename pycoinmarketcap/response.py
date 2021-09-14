@@ -1,4 +1,28 @@
-from typing import Dict
+from typing import Dict, Generic, TypeVar
+
+T = TypeVar("T")
+
+
+class Response(Generic[T]):
+    """
+    Response object for all requests / function calls.
+
+    Attributes
+    ----------
+    data: T
+        Data content of response
+    status: ResponseStatus
+        Standardized status response for API calls.
+    """
+
+    def __init__(self, response: Dict) -> None:
+        """Parameters
+
+        Args:
+            response (Dict): The response json.
+        """
+        self.data: T = response["data"]
+        self.status = ResponseStatus(response["status"])
 
 
 class ResponseStatus:

@@ -1,6 +1,6 @@
-from typing import Dict
-from requests import Session
-from requests.models import Response
+from typing import Dict, List
+from requests import Session, models
+from .response import Response
 from .errors import *
 
 from __future__ import annotations
@@ -40,7 +40,7 @@ class CoinMarketCap:
             [type]: Dict
         """
 
-        r: Response = self.__session.get(
+        r: models.Response = self.__session.get(
             API_DOMAIN + url,
             params=self.__cleanNoneItems(params),
             headers=self.__headers,
@@ -78,14 +78,14 @@ class CoinMarketCap:
 
         raise ErrorBadRequest(status)
 
-    def crypto_airdrop(self, id: str):
+    def crypto_airdrop(self, id: str) -> Response[Dict]:
         """Returns information about a single airdrop available on CoinMarketCap.
         Includes the cryptocurrency data.
 
         Args:
             id (str): Airdrop Unique ID. This can be found using the Aidrops API.
         """
-        return self.__get(f"/cryptocurrency/airdrop", id=id)
+        return Response[Dict](self.__get(f"/cryptocurrency/airdrop", id=id))
 
     def crypto_airdrops(
         self,
@@ -95,7 +95,7 @@ class CoinMarketCap:
         id: str = None,
         slug: str = None,
         symbol: str = None,
-    ):
+    ) -> Response[List]:
         """Returns a list of past, present, or future airdrops which have run on CoinMarketCap.
 
         Args:
@@ -110,14 +110,16 @@ class CoinMarketCap:
             symbol (str, optional): Filter by cryptocurrency symbols.
                     Example: "BTC,ETH" . Defaults to None.
         """
-        return self.__get(
-            f"/cryptocurrency/airdrops",
-            start=start,
-            limit=limit,
-            status=status,
-            id=id,
-            slug=slug,
-            symbol=symbol,
+        return Response[List](
+            self.__get(
+                f"/cryptocurrency/airdrops",
+                start=start,
+                limit=limit,
+                status=status,
+                id=id,
+                slug=slug,
+                symbol=symbol,
+            )
         )
 
     def crypto_categories(
@@ -127,7 +129,7 @@ class CoinMarketCap:
         id: str = None,
         slug: str = None,
         symbol: str = None,
-    ):
+    ) -> Response[List[Dict]]:
         """Returns information about all coin categories available on CoinMarketCap. Includes a
         paginated list of cryptocurrency quotes and metadata from each category.
 
@@ -145,13 +147,15 @@ class CoinMarketCap:
             [type]: [description]
         """
 
-        return self.__get(
-            f"/cryptocurrency/categories",
-            start=start,
-            limit=limit,
-            id=id,
-            slug=slug,
-            symbol=symbol,
+        return Response[List[Dict]](
+            self.__get(
+                f"/cryptocurrency/categories",
+                start=start,
+                limit=limit,
+                id=id,
+                slug=slug,
+                symbol=symbol,
+            )
         )
 
     def crypto_category(
@@ -161,7 +165,7 @@ class CoinMarketCap:
         limit: int = 100,
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[Dict]:
         """Returns information about a single coin category available on CoinMarketCap. Includes
         a paginated list of the cryptocurrency quotes and metadata for the category.
 
@@ -178,13 +182,15 @@ class CoinMarketCap:
             [type]: [description]
         """
 
-        return self.__get(
-            f"/cryptocurrency/category",
-            id=id,
-            start=start,
-            limit=limit,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[Dict](
+            self.__get(
+                f"/cryptocurrency/category",
+                id=id,
+                start=start,
+                limit=limit,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def crypto_metadata(
@@ -194,7 +200,7 @@ class CoinMarketCap:
         symbol: str = None,
         address: str = None,
         aux: str = "urls,logo,description,tags,platform,date_added,notice",
-    ):
+    ) -> Response[Dict]:
         """Returns all static metadata available for one or more cryptocurrencies.
          This information includes details like logo, description, official website URL,
          social links, and links to a cryptocurrency's technical documentation.
@@ -213,13 +219,15 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/info",
-            id=id,
-            slug=slug,
-            symbol=symbol,
-            address=address,
-            aux=aux,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/info",
+                id=id,
+                slug=slug,
+                symbol=symbol,
+                address=address,
+                aux=aux,
+            )
         )
 
     def crypto_map(
@@ -230,7 +238,7 @@ class CoinMarketCap:
         sort: str = "id",
         symbol: str = None,
         aux: str = "platform,first_historical_data,last_historical_data,is_active",
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a mapping of all cryptocurrencies to unique CoinMarketCap ids.
 
         Args:
@@ -248,14 +256,16 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/map",
-            listing_status=listing_status,
-            start=start,
-            limit=limit,
-            sort=sort,
-            symbol=symbol,
-            aux=aux,
+        return Response[List[Dict]](
+            self.__get(
+                "/cryptocurrency/map",
+                listing_status=listing_status,
+                start=start,
+                limit=limit,
+                sort=sort,
+                symbol=symbol,
+                aux=aux,
+            )
         )
 
     def crypto_listings_historical(
@@ -269,7 +279,7 @@ class CoinMarketCap:
         sort_dir: str = "asc",
         cryptocurrency_type: str = "all",
         aux: str = "platform,tags,date_added,circulating_supply,total_supply,max_supply,cmc_rank,num_market_pairs",
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a ranked and sorted list of all cryptocurrencies for a historical UTC date.
 
         Args:
@@ -294,17 +304,19 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/listings/historical",
-            date=date,
-            start=start,
-            limit=limit,
-            convert=convert,
-            convert_id=convert_id,
-            sort=sort,
-            sort_dir=sort_dir,
-            cryptocurrency_type=cryptocurrency_type,
-            aux=aux,
+        return Response[List[Dict]](
+            self.__get(
+                "/cryptocurrency/listings/historical",
+                date=date,
+                start=start,
+                limit=limit,
+                convert=convert,
+                convert_id=convert_id,
+                sort=sort,
+                sort_dir=sort_dir,
+                cryptocurrency_type=cryptocurrency_type,
+                aux=aux,
+            )
         )
 
     def crypto_listings_latest(
@@ -327,7 +339,7 @@ class CoinMarketCap:
         cryptocurrency_type: str = "all",
         tag: str = "all",
         aux: str = "num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply",
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of all active cryptocurrencies with latest market data.
 
         Args:
@@ -371,26 +383,28 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/listings/latest",
-            start=start,
-            limit=limit,
-            price_min=price_min,
-            price_max=price_max,
-            market_cap_min=market_cap_min,
-            volume_24h_min=volume_24h_min,
-            volume_24h_max=volume_24h_max,
-            circulating_supply_min=circulating_supply_min,
-            circulating_supply_max=circulating_supply_max,
-            percent_change_24h_min=percent_change_24h_min,
-            percent_change_24h_max=percent_change_24h_max,
-            convert=convert,
-            convert_id=convert_id,
-            sort=sort,
-            sort_dir=sort_dir,
-            cryptocurrency_type=cryptocurrency_type,
-            tag=tag,
-            aux=aux,
+        return Response[List[Dict]](
+            self.__get(
+                "/cryptocurrency/listings/latest",
+                start=start,
+                limit=limit,
+                price_min=price_min,
+                price_max=price_max,
+                market_cap_min=market_cap_min,
+                volume_24h_min=volume_24h_min,
+                volume_24h_max=volume_24h_max,
+                circulating_supply_min=circulating_supply_min,
+                circulating_supply_max=circulating_supply_max,
+                percent_change_24h_min=percent_change_24h_min,
+                percent_change_24h_max=percent_change_24h_max,
+                convert=convert,
+                convert_id=convert_id,
+                sort=sort,
+                sort_dir=sort_dir,
+                cryptocurrency_type=cryptocurrency_type,
+                tag=tag,
+                aux=aux,
+            )
         )
 
     def crypto_marketpairs_latest(
@@ -409,7 +423,7 @@ class CoinMarketCap:
         fee_type: str = "all",
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[Dict]:
         """Lists all active market pairs that CoinMarketCap tracks for a given cryptocurrency or fiat currency.
 
         Args:
@@ -442,22 +456,24 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/market-pairs/latest",
-            id=id,
-            slug=slug,
-            symbol=symbol,
-            start=start,
-            limit=limit,
-            sort_dir=sort_dir,
-            sort=sort,
-            aux=aux,
-            matched_id=matched_id,
-            matched_symbol=matched_symbol,
-            category=category,
-            fee_type=fee_type,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/market-pairs/latest",
+                id=id,
+                slug=slug,
+                symbol=symbol,
+                start=start,
+                limit=limit,
+                sort_dir=sort_dir,
+                sort=sort,
+                aux=aux,
+                matched_id=matched_id,
+                matched_symbol=matched_symbol,
+                category=category,
+                fee_type=fee_type,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def crypto_ohlcv_historical(
@@ -473,7 +489,7 @@ class CoinMarketCap:
         convert: str = None,
         convert_id: str = None,
         skip_invalid: bool = False,
-    ):
+    ) -> Response[Dict]:
         """Returns historical OHLCV (Open, High, Low, Close, Volume) data along with
         market cap for any cryptocurrency using time interval parameters. At least
         one "id" or "slug" or "symbol" is required for this request.
@@ -500,19 +516,21 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/ohlcv/historical",
-            id=id,
-            slug=slug,
-            symbol=symbol,
-            time_period=time_period,
-            time_start=time_start,
-            time_end=time_end,
-            count=count,
-            interval=interval,
-            convert=convert,
-            convert_id=convert_id,
-            skip_invalid=skip_invalid,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/ohlcv/historical",
+                id=id,
+                slug=slug,
+                symbol=symbol,
+                time_period=time_period,
+                time_start=time_start,
+                time_end=time_end,
+                count=count,
+                interval=interval,
+                convert=convert,
+                convert_id=convert_id,
+                skip_invalid=skip_invalid,
+            )
         )
 
     def crypto_ohlcv_latest(
@@ -522,7 +540,7 @@ class CoinMarketCap:
         convert: str = None,
         convert_id: str = None,
         skip_invalid: bool = False,
-    ):
+    ) -> Response[Dict]:
         """Returns the latest OHLCV (Open, High, Low, Close, Volume) market values for one or more cryptocurrencies for the current UTC day.
 
         Args:
@@ -539,13 +557,15 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/ohlvc/latest",
-            id=id,
-            symbol=symbol,
-            convert=convert,
-            convert_id=convert_id,
-            skip_invalid=skip_invalid,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/ohlvc/latest",
+                id=id,
+                symbol=symbol,
+                convert=convert,
+                convert_id=convert_id,
+                skip_invalid=skip_invalid,
+            )
         )
 
     def crypto_price_performance_stats_latest(
@@ -557,7 +577,7 @@ class CoinMarketCap:
         convert: str = None,
         convert_id: str = None,
         skip_invalid: bool = False,
-    ):
+    ) -> Response[Dict]:
         """Returns price performance statistics for one or more cryptocurrencies including launch price ROI and all-time high / all-time low.
 
         Args:
@@ -577,15 +597,17 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/price-performance-stats/latest",
-            id=id,
-            slug=slug,
-            symbol=symbol,
-            time_period=time_period,
-            convert=convert,
-            convert_id=convert_id,
-            skip_invalid=skip_invalid,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/price-performance-stats/latest",
+                id=id,
+                slug=slug,
+                symbol=symbol,
+                time_period=time_period,
+                convert=convert,
+                convert_id=convert_id,
+                skip_invalid=skip_invalid,
+            )
         )
 
     def crypto_quotes_historical(
@@ -600,7 +622,7 @@ class CoinMarketCap:
         convert_id: str = None,
         aux: str = "price,volume,market_cap,quote_timestamp,is_active,is_fiat",
         skip_invalid: bool = False,
-    ):
+    ) -> Response[Dict]:
         """Returns an interval of historic market quotes for any cryptocurrency based on time and interval parameters.
 
         Args:
@@ -625,18 +647,20 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/quotes/historical",
-            id=id,
-            symbol=symbol,
-            time_start=time_start,
-            time_end=time_end,
-            count=count,
-            interval=interval,
-            convert=convert,
-            convert_id=convert_id,
-            aux=aux,
-            skip_invalid=skip_invalid,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/quotes/historical",
+                id=id,
+                symbol=symbol,
+                time_start=time_start,
+                time_end=time_end,
+                count=count,
+                interval=interval,
+                convert=convert,
+                convert_id=convert_id,
+                aux=aux,
+                skip_invalid=skip_invalid,
+            )
         )
 
     def crypto_quotes_latest(
@@ -648,7 +672,7 @@ class CoinMarketCap:
         convert_id: str = None,
         aux: str = "num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,is_active,is_fiat",
         skip_invalid: bool = False,
-    ):
+    ) -> Response[Dict]:
         """[summary]
 
         Args:
@@ -669,15 +693,17 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/quotes/latest",
-            id=id,
-            slug=slug,
-            symbol=symbol,
-            convert=convert,
-            convert_id=convert_id,
-            aux=aux,
-            skip_invalid=skip_invalid,
+        return Response[Dict](
+            self.__get(
+                "/cryptocurrency/quotes/latest",
+                id=id,
+                slug=slug,
+                symbol=symbol,
+                convert=convert,
+                convert_id=convert_id,
+                aux=aux,
+                skip_invalid=skip_invalid,
+            )
         )
 
     def crypto_trending_gainers_losers(
@@ -687,7 +713,7 @@ class CoinMarketCap:
         time_period: str = "24h",
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of all trending cryptocurrencies, determined and sorted by the largest price gains or losses.
 
         Args:
@@ -703,13 +729,15 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/trending/gainers-losers",
-            start=start,
-            limit=limit,
-            time_period=time_period,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[List[Dict]](
+            self.__get(
+                "/cryptocurrency/trending/gainers-losers",
+                start=start,
+                limit=limit,
+                time_period=time_period,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def crypto_trending_latest(
@@ -718,7 +746,7 @@ class CoinMarketCap:
         limit: int = 100,
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of all trending cryptocurrency market data, determined and sorted by CoinMarketCap search volume.
 
         Args:
@@ -732,12 +760,14 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/trending/latest",
-            start=start,
-            limit=limit,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[List[Dict]](
+            self.__get(
+                "/cryptocurrency/trending/latest",
+                start=start,
+                limit=limit,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def crypto_trending_most_visited(
@@ -747,7 +777,7 @@ class CoinMarketCap:
         time_period: str = "24h",
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of all trending cryptocurrency market data, determined and sorted by traffic to coin detail pages.
 
         Args:
@@ -763,13 +793,15 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/cryptocurrency/trending/most-visited",
-            start=start,
-            limit=limit,
-            time_period=time_period,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[List[Dict]](
+            self.__get(
+                "/cryptocurrency/trending/most-visited",
+                start=start,
+                limit=limit,
+                time_period=time_period,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def fiat_map(
@@ -778,7 +810,7 @@ class CoinMarketCap:
         limit: int = None,
         sort: str = "id",
         include_metals: bool = False,
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a mapping of all supported fiat currencies to unique CoinMarketCap IDs.
 
         Args:
@@ -790,12 +822,14 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/fiat/map",
-            start=start,
-            limit=limit,
-            sort=sort,
-            include_metals=include_metals,
+        return Response[List[Dict]](
+            self.__get(
+                "/fiat/map",
+                start=start,
+                limit=limit,
+                sort=sort,
+                include_metals=include_metals,
+            )
         )
 
     def exchange_metadata(
@@ -803,7 +837,7 @@ class CoinMarketCap:
         id: str = None,
         slug: str = None,
         aux: str = "urls,logo,description,date_launched,notice",
-    ):
+    ) -> Response[Dict]:
         """Returns all static metadata for one or more exchanges.
 
         Args:
@@ -817,7 +851,7 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get("/exchange/info", id=id, slug=slug, aux=aux)
+        return Response[Dict](self.__get("/exchange/info", id=id, slug=slug, aux=aux))
 
     def exchange_map(
         self,
@@ -828,7 +862,7 @@ class CoinMarketCap:
         sort: str = "id",
         aux: str = "first_historical_data,last_historical_data,is_active",
         crypto_id: str = "",
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of all active cryptocurrency exchanges by CoinMarketCap ID.
 
         Args:
@@ -847,15 +881,17 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/exchange/map",
-            listing_status=listing_status,
-            slug=slug,
-            start=start,
-            limit=limit,
-            sort=sort,
-            aux=aux,
-            crypto_id=crypto_id,
+        return Response[List[Dict]](
+            self.__get(
+                "/exchange/map",
+                listing_status=listing_status,
+                slug=slug,
+                start=start,
+                limit=limit,
+                sort=sort,
+                aux=aux,
+                crypto_id=crypto_id,
+            )
         )
 
     def exchange_listings_latest(
@@ -869,7 +905,7 @@ class CoinMarketCap:
         aux: str = "num_market_pairs,traffic_score,rank,exchange_score,effective_liquidity_24h",
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of all cryptocurrency exchanges including the latest aggregate market data for each exchange.
 
         Args:
@@ -892,17 +928,19 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/exchange/listings/latest",
-            start=start,
-            limit=limit,
-            sort=sort,
-            sort_dir=sort_dir,
-            market_type=market_type,
-            category=category,
-            aux=aux,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[List[Dict]](
+            self.__get(
+                "/exchange/listings/latest",
+                start=start,
+                limit=limit,
+                sort=sort,
+                sort_dir=sort_dir,
+                market_type=market_type,
+                category=category,
+                aux=aux,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def exchange_marketpairs_latest(
@@ -918,7 +956,7 @@ class CoinMarketCap:
         fee_type: str = "all",
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[Dict]:
         """Returns all active market pairs that CoinMarketCap tracks for a given exchange.
 
         Args:
@@ -946,19 +984,21 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/exchange/market-pairs/latest",
-            id=id,
-            slug=slug,
-            start=start,
-            limit=limit,
-            aux=aux,
-            matched_id=matched_id,
-            matched_symbol=matched_symbol,
-            category=category,
-            fee_type=fee_type,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[Dict](
+            self.__get(
+                "/exchange/market-pairs/latest",
+                id=id,
+                slug=slug,
+                start=start,
+                limit=limit,
+                aux=aux,
+                matched_id=matched_id,
+                matched_symbol=matched_symbol,
+                category=category,
+                fee_type=fee_type,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def exchange_quotes_historical(
@@ -971,7 +1011,7 @@ class CoinMarketCap:
         interval: str = "5m",
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[Dict]:
         """Returns an interval of historic quotes for any exchange based on time and interval parameters.
 
         Args:
@@ -996,16 +1036,18 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/exchange/quotes/historical",
-            id=id,
-            slug=slug,
-            time_start=time_start,
-            time_end=time_end,
-            count=count,
-            interval=interval,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[Dict](
+            self.__get(
+                "/exchange/quotes/historical",
+                id=id,
+                slug=slug,
+                time_start=time_start,
+                time_end=time_end,
+                count=count,
+                interval=interval,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def exchange_quotes_latest(
@@ -1015,7 +1057,7 @@ class CoinMarketCap:
         convert: str = None,
         convert_id: str = None,
         aux: str = "num_market_pairs,traffic_score,rank,exchange_score,liquidity_score,effective_liquidity_24h",
-    ):
+    ) -> Response[Dict]:
         """Returns the latest aggregate market data for 1 or more exchanges.[summary]
 
         Args:
@@ -1033,13 +1075,15 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/exchange/quotes/latest",
-            id=id,
-            slug=slug,
-            convert=convert,
-            convert_id=convert_id,
-            aux=aux,
+        return Response[Dict](
+            self.__get(
+                "/exchange/quotes/latest",
+                id=id,
+                slug=slug,
+                convert=convert,
+                convert_id=convert_id,
+                aux=aux,
+            )
         )
 
     def globalmetrics_quotes_historical(
@@ -1051,7 +1095,7 @@ class CoinMarketCap:
         convert: str = None,
         convert_id: str = None,
         aux: str = "btc_dominance,active_cryptocurrencies,active_exchanges,active_market_pairs,total_volume_24h,total_volume_24h_reported,altcoin_market_cap,altcoin_volume_24h,altcoin_volume_24h_reported",
-    ):
+    ) -> Response[List[Dict]]:
         """Returns an interval of historical global cryptocurrency market metrics based on time and interval parameters.
 
         Args:
@@ -1074,18 +1118,22 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/global-metrics/quotes/historical",
-            time_start=time_start,
-            time_end=time_end,
-            count=count,
-            interval=interval,
-            convert=convert,
-            convert_id=convert_id,
-            aux=aux,
+        return Response[List[Dict]](
+            self.__get(
+                "/global-metrics/quotes/historical",
+                time_start=time_start,
+                time_end=time_end,
+                count=count,
+                interval=interval,
+                convert=convert,
+                convert_id=convert_id,
+                aux=aux,
+            )
         )
 
-    def globalmetrics_quotes_latest(self, convert: str = None, convert_id: str = None):
+    def globalmetrics_quotes_latest(
+        self, convert: str = None, convert_id: str = None
+    ) -> Response[Dict]:
         """Comma-separated list of supplemental data fields to return.[summary]
 
         Args:
@@ -1098,8 +1146,10 @@ class CoinMarketCap:
             [type]: [description]
         """
 
-        return self.__get(
-            "/global-metrics/quotes/latest", convert=convert, convert_id=convert_id
+        return Response[Dict](
+            self.__get(
+                "/global-metrics/quotes/latest", convert=convert, convert_id=convert_id
+            )
         )
 
     def tools_price_conversion(
@@ -1110,7 +1160,7 @@ class CoinMarketCap:
         time: str = None,
         convert: str = None,
         convert_id: str = None,
-    ):
+    ) -> Response[Dict]:
         """Convert an amount of one cryptocurrency or fiat currency into one or more different currencies utilizing the latest market rate for each currency.
 
         Args:
@@ -1128,19 +1178,21 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/tools/price-conversion",
-            amount=amount,
-            id=id,
-            symbol=symbol,
-            time=time,
-            convert=convert,
-            convert_id=convert_id,
+        return Response[Dict](
+            self.__get(
+                "/tools/price-conversion",
+                amount=amount,
+                id=id,
+                symbol=symbol,
+                time=time,
+                convert=convert,
+                convert_id=convert_id,
+            )
         )
 
     def blockchain_statistics_latest(
         self, id: str = None, symbol: str = None, slug: str = None
-    ):
+    ) -> Response[Dict]:
         """Returns the latest blockchain statistics data for 1 or more blockchains. Bitcoin, Litecoin, and Ethereum are currently supported.
 
         Args:
@@ -1154,8 +1206,8 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/blockchain/statistics/latest", id=id, symbol=symbol, slug=slug
+        return Response[Dict](
+            self.__get("/blockchain/statistics/latest", id=id, symbol=symbol, slug=slug)
         )
 
     def partners_fsc_fcas_listings_latest(
@@ -1163,7 +1215,7 @@ class CoinMarketCap:
         start: int = 1,
         limit: int = 100,
         aux: str = "point_change_24h,percent_change_24h",
-    ):
+    ) -> Response[List[Dict]]:
         """Returns a paginated list of FCAS scores for all cryptocurrencies currently supported by FCAS.
 
         Args:
@@ -1175,11 +1227,13 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/partners/flipside-crypto/fcas/listings/latest",
-            start=start,
-            limit=limit,
-            aux=aux,
+        return Response[List[Dict]](
+            self.__get(
+                "/partners/flipside-crypto/fcas/listings/latest",
+                start=start,
+                limit=limit,
+                aux=aux,
+            )
         )
 
     def partners_fsc_fcas_lquotes_latest(
@@ -1188,7 +1242,7 @@ class CoinMarketCap:
         slug: str = None,
         symbol: str = None,
         aux: str = "point_change_24h,percent_change_24h",
-    ):
+    ) -> Response[Dict]:
         """Returns the latest FCAS score for 1 or more cryptocurrencies. FCAS ratings are on a
         0-1000 point scale with a corresponding letter grade and is updated once a day at UTC midnight.
 
@@ -1205,19 +1259,21 @@ class CoinMarketCap:
         Returns:
             [type]: [description]
         """
-        return self.__get(
-            "/partners/flipside-crypto/fcas/quotes/latest",
-            slug=slug,
-            symbol=symbol,
-            id=id,
-            aux=aux,
+        return Response[Dict](
+            self.__get(
+                "/partners/flipside-crypto/fcas/quotes/latest",
+                slug=slug,
+                symbol=symbol,
+                id=id,
+                aux=aux,
+            )
         )
 
-    def key_info(self):
+    def key_info(self) -> Response[Dict]:
         """Returns API key details and usage stats. This endpoint can be used to programmatically monitor your
         key usage compared to the rate limit and daily/monthly credit limits available to your API plan.
 
         Returns:
             [type]: [description]
         """
-        return self.__get("/key/info")
+        return Response[Dict](self.__get("/key/info"))
