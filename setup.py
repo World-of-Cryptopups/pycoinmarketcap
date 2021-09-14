@@ -4,8 +4,8 @@ import pathlib
 README = (pathlib.Path(__file__).parent / "README.md").read_text()
 
 setup(
-    name="hanapin",
-    version="0.0.1",
+    name="pycoinmarketcap",
+    version="0.1.0",
     description="A simple api wrapper for the CoinMarketCap API",
     long_description=README,
     long_description_content_type="text/markdown",

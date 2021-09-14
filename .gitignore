@@ -8,3 +8,9 @@ __pycache__
 # env
 .env
 .env.local
+
+
+# build output
+build 
+dist
+*.egg-info
