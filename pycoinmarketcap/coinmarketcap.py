@@ -11,7 +11,16 @@ SANDBOX_API_KEY = "b54bcf4d-1bca-4e8e-9a24-22ff2c3d462c"
 
 
 class CoinMarketCap:
+    """CoinMarketCap API Wrapper
+
+    Documentation: https://coinmarketcap.com/api/documentation/v1/
+    """
+
     def __init__(self, api_key: str) -> None:
+        """
+        Args:
+            api_key (str): Your CoinMarketCap API_KEY
+        """
         self.api_key = api_key
         self.__session = Session()
         self.__headers = {"Accept": "application/json", "X-CMC_PRO_API_KEY": api_key}
@@ -378,6 +387,7 @@ class CoinMarketCap:
             convert=convert,
             convert_id=convert_id,
             sort=sort,
+            sort_dir=sort_dir,
             cryptocurrency_type=cryptocurrency_type,
             tag=tag,
             aux=aux,
